@@ -147,55 +147,61 @@ export default {
     },
 
     // In your HomeView.vue methods section
-async validateLogin() {
-  this.errors = {};
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!this.email) {
-    this.errors.email = "Email is required";
-  } else if (!emailRegex.test(this.email)) {
-    this.errors.email = "Enter a valid email address";
-  }
-  if (!this.password) {
-    this.errors.password = "Password is required";
-  } else if (this.password.length <= 5) {
-    this.errors.password = "Password must be more than 5 characters";
-  }
+ async validateLogin() {
+      this.errors = {};
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.email) {
+        this.errors.email = "Email is required";
+      } else if (!emailRegex.test(this.email)) {
+        this.errors.email = "Enter a valid email address";
+      }
+      if (!this.password) {
+        this.errors.password = "Password is required";
+      } else if (this.password.length <= 5) {
+        this.errors.password = "Password must be more than 5 characters";
+      }
 
-  if (Object.keys(this.errors).length === 0) {
-    this.isSubmitting = true;
-    try {
-      // Admin check
-      if (
-        this.email === "otulajafavour@gmail.com" &&
-        this.password === "1234567890"
-      ) {
-        toast.success('Admin login successful!');
-        setTimeout(() => {
-          this.$router.push('/admin');
-        }, 1000);
-        return;
+      if (Object.keys(this.errors).length === 0) {
+        this.isSubmitting = true;
+        try {
+          // Admin check
+          if (
+            this.email === "otulajafavour@gmail.com" &&
+            this.password === "1234567890"
+          ) {
+            // Store admin as logged in for router guard
+            localStorage.setItem('user', JSON.stringify({
+              email: this.email,
+              role: 'admin'
+            }));
+            toast.success('Admin login successful!');
+            setTimeout(() => {
+              this.$router.push('/admin');
+            }, 1000);
+            return;
+          }
+          // Normal user login
+          const users = await mockstorage.fetchUsers();
+          const user = users.find(
+            u => u.email === this.email && u.password === this.password
+          );
+          if (user) {
+            localStorage.setItem('userId', user.id);
+            localStorage.setItem('user', JSON.stringify(user)); // <-- Add this line
+            toast.success('Login successful!');
+            setTimeout(() => {
+              this.$router.push('/dashboard');
+            }, 1500);
+          } else {
+            toast.error('Invalid email or password');
+          }
+        } catch (err) {
+          toast.error('Internet Error');
+        } finally {
+          this.isSubmitting = false;
+        }
       }
-      // Normal user login
-      const users = await mockstorage.fetchUsers();
-      const user = users.find(
-        u => u.email === this.email && u.password === this.password
-      );
-      if (user) {
-        localStorage.setItem('userId', user.id);
-        toast.success('Login successful!');
-        setTimeout(() => {
-          this.$router.push('/dashboard');
-        }, 1500);
-      } else {
-        toast.error('Invalid email or password');
-      }
-    } catch (err) {
-      toast.error('Internet Error');
-    } finally {
-      this.isSubmitting = false;
-    }
-  }
-},
+    },
     
     async validateSignUp() {
       this.errors = {};

@@ -79,10 +79,10 @@
                       <i class="fas fa-eye"></i> Read
                     </button>
                     <button class="btn btn-outline-secondary btn-sm" @click="showCommentModal(book, idx, 'owned')">
-                      <i class="fas fa-comment"></i> Comment
+                      <i class="fas fa-comment"></i>
                     </button>
                     <button class="btn btn-outline-success btn-sm" @click="downloadBook(book)">
-                      <i class="fas fa-download"></i> Download
+                      <i class="fas fa-download"></i> 
                     </button>
                   </div>
                 </div>
@@ -128,10 +128,10 @@
                       <i class="fas fa-eye"></i> Read
                     </button>
                     <button class="btn btn-outline-secondary btn-sm" @click="showCommentModal(book, idx, 'rented')">
-                      <i class="fas fa-comment"></i> Comment
+                      <i class="fas fa-comment"></i> 
                     </button>
                     <button class="btn btn-outline-danger btn-sm" @click="returnRentedBook(book.id, idx)">
-                      <i class="fas fa-undo"></i> Return
+                      <i class="fas fa-undo"></i> 
                     </button>
                   </div>
                 </div>
