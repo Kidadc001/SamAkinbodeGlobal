@@ -491,20 +491,29 @@ export default {
         this.commentLoading = false;
       }
     },
-    async returnRentedBook(bookId, idx) {
-      try {
-        await mockstorage.returnBorrowedBook(bookId, this.user.id);
-        this.rentedBooks.splice(idx, 1);
-        localStorage.setItem(`borrowedBooks_${this.user.id}`, JSON.stringify(this.rentedBooks));
+     async returnRentedBook(bookId, idx) {
+    try {
+      // Remove from backend/local storage
+      await mockstorage.returnBorrowedBook(bookId, this.user.id);
+      // Remove from local rentedBooks array
+      this.rentedBooks.splice(idx, 1);
+      localStorage.setItem(`borrowedBooks_${this.user.id}`, JSON.stringify(this.rentedBooks));
+      // Clear countdown interval and timeout
+      if (this.countdownTimers[bookId]) {
+        clearTimeout(this.countdownTimers[bookId]);
+        delete this.countdownTimers[bookId];
+      }
+      if (this.countdownTimers[`interval_${bookId}`]) {
         clearInterval(this.countdownTimers[`interval_${bookId}`]);
         delete this.countdownTimers[`interval_${bookId}`];
-        delete this.countdownDisplays[bookId];
-        toast.success("Book returned successfully!");
-      } catch (error) {
-        console.error("Error returning book:", error);
-        toast.error("Failed to return book.");
       }
-    },
+      delete this.countdownDisplays[bookId];
+      toast.success("Book returned successfully!");
+    } catch (error) {
+      console.error("Error returning book:", error);
+      toast.error("Failed to return book.");
+    }
+  },
     async submitAppointment() {
       this.appointmentLoading = true;
       try {

@@ -1,12 +1,10 @@
-
-
 <template>
   <div>
     <!-- Responsive Navbar -->
     <nav class="admin-navbar">
       <ul class="py-2">
         <li class="d-none d-lg-block bookvault-title">
-          <i class="fas fa-book-reader me-2"></i>BookVault 
+          <i class="fas fa-book-reader me-2"></i>BookVault
         </li>
         <li v-for="item in sidebarItems" :key="item.tab" @click="changeTab(item.tab)">
           <button :class="{ active: adminTab === item.tab }" class="nav-btn" :disabled="loadingTab === item.tab">
@@ -15,7 +13,8 @@
           </button>
         </li>
         <li>
-          <button class="nav-btn" :class="{ active: adminTab === 'profile' }" @click="changeTab('profile')" :disabled="loadingTab === 'profile'">
+          <button class="nav-btn" :class="{ active: adminTab === 'profile' }" @click="changeTab('profile')"
+            :disabled="loadingTab === 'profile'">
             <i class="fas fa-user-shield"></i>
             <span class="nav-label">Admin</span>
           </button>
@@ -71,34 +70,36 @@
                     <input v-model="bookForm.author" type="text" class="form-control" placeholder="Author" required>
                   </div>
                   <div class="mb-2" style="display: flex;">
-                    <input v-model.number="bookForm.price" type="number" class="form-control" placeholder="Buy Amount (₦)" required>
-                    <input v-model.number="bookForm.rent" type="number" class="form-control" placeholder="Rent Amount (₦)" required>
-                  </div>
-                  <!-- <div class="mb-2">
+                    <input v-model.number="bookForm.price" type="number" class="form-control"
+                      placeholder="Buy Amount (₦)" required>
+                    <input v-model.number="bookForm.rent" type="number" class="form-control"
+                      placeholder="Rent Amount (₦)" required>
                   </div>
                   <div class="mb-2">
-                  </div> -->
-                  <div class="mb-2">
-                    <textarea v-model="bookForm.description" class="form-control" :maxlength="2500" rows="5" placeholder="Description (max 400 words)" required></textarea>
+                    <textarea v-model="bookForm.description" class="form-control" :maxlength="2500" rows="5"
+                      placeholder="Description (max 400 words)" required></textarea>
                     <div class="small text-muted">{{ wordCount(bookForm.description) }}/400 words</div>
                   </div>
                   <div class="mb-2">
                     <label class="form-label">Cover Image</label>
                     <input type="file" class="form-control" accept="image/*" @change="handleImageUpload">
                     <div v-if="bookForm.image" class="mt-2">
-                      <img :src="bookForm.image" alt="Preview" style="max-width: 120px; max-height: 100px; object-fit:cover;">
+                      <img :src="bookForm.image" alt="Preview"
+                        style="max-width: 120px; max-height: 100px; object-fit:cover;">
                       <div class="small text-muted">Cover Preview</div>
                     </div>
                   </div>
                   <div class="mb-2">
-                    <input v-model="bookForm.pdfUrl" type="url" class="form-control" placeholder="Book File URL (PDF, Google Drive, etc)" required>
+                    <input v-model="bookForm.pdfUrl" type="url" class="form-control"
+                      placeholder="Book File URL (PDF, Google Drive, etc)" required>
                     <div v-if="bookForm.pdfUrl" class="mt-2">
                       <iframe :src="bookForm.pdfUrl" style="width:100%;height:200px;" frameborder="0"></iframe>
                       <div class="small text-muted">PDF Preview</div>
                     </div>
                   </div>
                   <div class="d-flex justify-content-end">
-                    <button class="btn btn-secondary me-2" type="button" @click="closeBookModal" :disabled="bookFormLoading">Cancel</button>
+                    <button class="btn btn-secondary me-2" type="button" @click="closeBookModal"
+                      :disabled="bookFormLoading">Cancel</button>
                     <button class="btn btn-success" type="submit" :disabled="bookFormLoading">
                       <span v-if="bookFormLoading" class="spinner-border spinner-border-sm"></span>
                       <span v-else>{{ modalMode === 'edit' ? 'Update' : 'Add' }}</span>
@@ -132,24 +133,24 @@
                   <td>₦{{ book.rent }}</td>
                   <td>{{ book.description.slice(0, 400) }}<span v-if="book.description.length > 400">...</span></td>
                   <td>
-                    <img v-if="book.image" :src="book.image" alt="Book" style="width:40px;height:40px;object-fit:cover;">
+                    <img v-if="book.image" :src="book.image" alt="Book"
+                      style="width:40px;height:40px;object-fit:cover;">
                   </td>
                   <td>
                     <a v-if="book.pdfUrl" :href="book.pdfUrl" target="_blank" class="badge bg-info">File Link</a>
                   </td>
                   <td>{{ book.dateAdded }}</td>
                   <td>
-                    <button class="btn btn-primary btn-sm me-1" @click="editBook(book)" :disabled="bookFormLoading">Edit</button>
-                    <button class="btn btn-danger btn-sm" @click="deleteBook(book.id)" :disabled="bookFormLoading">Delete</button>
+                    <button class="btn btn-primary btn-sm me-1" @click="editBook(book)"
+                      :disabled="bookFormLoading">Edit</button>
+                    <button class="btn btn-danger btn-sm" @click="deleteBook(book.id)"
+                      :disabled="bookFormLoading">Delete</button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-
-        
-        
 
         <!-- Users -->
         <div v-else-if="adminTab === 'users'">
@@ -176,6 +177,7 @@
                   <td>{{ user.broughtBooks?.length || 0 }}</td>
                   <td>
                     <button class="btn btn-info btn-sm" @click="selectUser(user)">View Books</button>
+                    <button class="btn btn-danger btn-sm ms-2" @click="deleteUser(user.id)">Delete</button>
                   </td>
                 </tr>
               </tbody>
@@ -185,7 +187,7 @@
           <div v-if="selectedUser" class="custom-modal-backdrop" @click.self="selectedUser = null">
             <div class="custom-modal">
               <div class="modal-header">
-                <h5 class="modal-title">User Books</h5>
+                <h5 class="modal-title">User Books & Comments</h5>
                 <button type="button" class="btn-close" @click="selectedUser = null"></button>
               </div>
               <div class="modal-body">
@@ -202,6 +204,14 @@
                     {{ book.title }} by {{ book.author }}
                   </li>
                   <li v-if="!selectedUser.broughtBooks || selectedUser.broughtBooks.length === 0">None</li>
+                </ul>
+                <h6>User Comments</h6>
+                <ul>
+                  <li v-for="c in selectedUser.comments || []" :key="c.id">
+                    <strong>{{ selectedUser.firstName }}:</strong> {{ c.text || c.comment }} <span
+                      class="text-muted small">({{ c.date }})</span>
+                  </li>
+                  <li v-if="!selectedUser.comments || selectedUser.comments.length === 0">No comments.</li>
                 </ul>
               </div>
             </div>
@@ -287,14 +297,7 @@
             <h4>Admin Details</h4>
             <p><strong>Name:</strong> {{ adminProfile.name }}</p>
             <p><strong>Email:</strong> {{ adminProfile.email }}</p>
-            <h5 class="mt-4">All User Comments</h5>
-            <input v-model="commentDateFilter" type="date" class="form-control mb-2" style="max-width:170px">
-            <ul class="list-group">
-              <li v-for="c in filteredComments" :key="c.id" class="list-group-item">
-                <strong>{{ c.userName }}:</strong> {{ c.text }} <span class="text-muted small">({{ c.date }})</span>
-              </li>
-              <li v-if="filteredComments.length === 0" class="list-group-item text-muted">No comments found.</li>
-            </ul>
+
           </div>
           <div v-else-if="profileTab === 'edit'">
             <h4>Edit Profile</h4>
@@ -314,8 +317,6 @@
             </form>
           </div>
         </div>
-
-
       </section>
     </div>
   </div>
@@ -402,6 +403,7 @@ export default {
       });
       return all;
     },
+
     filteredBooks() {
       let books = this.books;
       if (this.bookSearch) {
@@ -586,6 +588,17 @@ export default {
     selectUser(user) {
       this.selectedUser = user;
     },
+    async deleteUser(userId) {
+      if (confirm("Are you sure you want to delete this user?")) {
+        try {
+          await mockstorage.deleteUser(userId);
+          this.users = this.users.filter(u => u.id !== userId);
+          this.showToast("User deleted successfully!");
+        } catch (e) {
+          this.showToast("Failed to delete user!", true);
+        }
+      }
+    },
     async saveAdminProfile() {
       this.profileLoading = true;
       try {
@@ -627,6 +640,7 @@ export default {
   top: 0;
   z-index: 1100;
 }
+
 .admin-navbar ul {
   display: flex;
   justify-content: space-around;
@@ -635,26 +649,31 @@ export default {
   padding: 0;
   list-style: none;
 }
+
 .admin-navbar li {
   flex: 1;
   text-align: center;
 }
+
 .bookvault-title {
   font-weight: bold;
   font-size: 1.2rem;
   color: #fff;
   padding: 12px 0;
 }
-textarea{
+
+textarea {
   height: 90px;
   resize: none;
   overflow-y: scroll;
 }
+
 @media (max-width: 991px) {
   .bookvault-title {
     display: none !important;
   }
 }
+
 .nav-btn {
   background: none;
   border: none;
@@ -668,11 +687,13 @@ textarea{
   transition: background 0.2s;
   position: relative;
 }
+
 .nav-btn.active,
 .nav-btn:focus {
   background: #084298;
   color: #fff;
 }
+
 .nav-label {
   display: block;
   font-size: 0.95rem;
@@ -680,6 +701,7 @@ textarea{
   color: #fff;
   font-weight: 500;
 }
+
 @media (max-width: 900px) {
   .admin-navbar {
     position: fixed;
@@ -689,41 +711,56 @@ textarea{
     border-top: 1px solid #e0e0e0;
     padding: 0;
   }
+
   .container-fluid.conc {
     padding-bottom: 60px;
   }
 }
+
 .modal-backdrop {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
   z-index: 1040;
   width: 100%;
 }
+
 .modal {
   overflow-y: scroll;
   margin: 40px 0px;
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
 }
+
 .custom-modal-backdrop {
   position: fixed;
-  top: 10px; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
+  top: 10px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
   z-index: 1050;
 }
+
 .custom-modal {
   background: #fff;
   border-radius: 8px;
   max-width: 400px;
   margin: 40px auto;
   padding: 24px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
 }
+
 .profile-navbar {
   display: flex;
   gap: 8px;
@@ -732,29 +769,33 @@ textarea{
 
 @media screen and (max-width:900px) {
   .nav-label {
-  display: none;
+    display: none;
 
-}
-.admin-navbar li i {
-  padding: 10px 0px;
-}
+  }
+
+  .admin-navbar li i {
+    padding: 10px 0px;
+  }
 
 
-.modal {
-  overflow: scroll;
-  padding: 300px 0px;
-  margin: 10px 0px;
-  position: unset;
-}
+  .modal {
+    overflow: scroll;
+    padding: 300px 0px;
+    margin: 10px 0px;
+    position: unset;
+  }
+
   .modal-backdrop {
-overflow-y: scroll;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
-  z-index: 1040;
-  width: 100%;
-}
+    overflow-y: scroll;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1040;
+    width: 100%;
+  }
 
 }
-
 </style>
